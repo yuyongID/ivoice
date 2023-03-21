@@ -52,7 +52,7 @@ func downloadAudio(text, outputDir string) error {
 	url := fmt.Sprintf("https://www.veed.io/api/v1/subtitles/synthesize/preview?text=%s&voice=zh-CN-XiaoxiaoNeural", url.QueryEscape(text))
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return fmt.Errorf("Failed to get audio data for text \"%s\".\n", text)
+		return fmt.Errorf("无法获取文本 \"%s\" 的音频数据。\n", text)
 	}
 	req.Header.Set("authority", "www.veed.io")
 	req.Header.Set("accept", "/")
@@ -70,30 +70,30 @@ func downloadAudio(text, outputDir string) error {
 	resp, err := client.Do(req)
 	if err != nil {
 		if strings.Contains(err.Error(), "Rate limit exceeded") {
-			return fmt.Errorf("rate limit exceeded for text \"%s\"", text)
+			return fmt.Errorf("文本 \"%s\" 的速率限制已超过", text)
 		} else {
-			return fmt.Errorf("failed to get audio data for text \"%s\": %v", text, err)
+			return fmt.Errorf("无法获取文本 \"%s\" 的音频数据: %v", text, err)
 		}
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to get audio data for text \"%s\". Http code is \"%d\"", text, resp.StatusCode)
+		return fmt.Errorf("无法获取文本 \"%s\" 的音频数据。 Http 状态码为 \"%d\"", text, resp.StatusCode)
 	}
 
 	outputFile := fmt.Sprintf("%s/%s.mp3", outputDir, strings.TrimSpace(text))
 	file, err := os.Create(outputFile)
 	if err != nil {
-		return fmt.Errorf("failed to create audio file \"%s\" for text \"%s\": %v", outputFile, text, err)
+		return fmt.Errorf("无法为文本 \"%s\" 创建音频文件 \"%s\": %v", text, outputFile, err)
 	}
 	defer file.Close()
 
 	_, err = io.Copy(file, resp.Body)
 	if err != nil {
-		return fmt.Errorf("failed to write audio data for text \"%s\" to file \"%s\": %v", text, outputFile, err)
+		return fmt.Errorf("无法将文本 \"%s\" 的音频数据写入文件 \"%s\": %v", text, outputFile, err)
 	}
 
-	fmt.Printf("Successfully generated audio file \"%s\".\n", outputFile)
+	fmt.Printf("成功生成音频文件 \"%s\"。\n", outputFile)
 	return nil
 }
 
@@ -101,7 +101,7 @@ func main() {
 	// 获取命令行参数
 	args := os.Args[1:]
 	if len(args) != 2 {
-		fmt.Println("Usage: ivoice <input_file> <output_dir>")
+		fmt.Println("用法: ivoice <input_file> <output_dir>")
 		os.Exit(1)
 	}
 	inputFile := args[0]
@@ -109,14 +109,14 @@ func main() {
 
 	// 判断输出目录是否存在
 	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
-		fmt.Println("Output directory does not exist.")
+		fmt.Println("输出目录不存在。")
 		os.Mkdir(outputDir, os.ModePerm)
 	}
 
 	// 打开输入文件并按行读取文本
 	file, err := os.Open(inputFile)
 	if err != nil {
-		fmt.Println("Failed to open input file.")
+		fmt.Println("无法打开输入文件。")
 		os.Exit(1)
 	}
 	defer file.Close()
