@@ -1,6 +1,6 @@
 module yuyongID/ivoice
 
-go 1.18
+go 1.20
 
 require github.com/zellyn/kooky v0.0.0-20221025221128-3e66d684c4db
 

@@ -93,7 +93,7 @@ func downloadAudio(text, outputDir string) error {
 		return fmt.Errorf("无法将文本 \"%s\" 的音频数据写入文件 \"%s\": %v", text, outputFile, err)
 	}
 
-	fmt.Printf("成功生成音频文件 \"%s\"。\n", outputFile)
+	log.Printf("成功生成音频文件 \"%s\"。\n", outputFile)
 	return nil
 }
 
@@ -101,7 +101,7 @@ func main() {
 	// 获取命令行参数
 	args := os.Args[1:]
 	if len(args) != 2 {
-		fmt.Println("用法: ivoice <input_file> <output_dir>")
+		log.Println("用法: ivoice <input_file> <output_dir>")
 		os.Exit(1)
 	}
 	inputFile := args[0]
@@ -109,14 +109,14 @@ func main() {
 
 	// 判断输出目录是否存在
 	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
-		fmt.Println("输出目录不存在。")
+		log.Println("输出目录不存在。")
 		os.Mkdir(outputDir, os.ModePerm)
 	}
 
 	// 打开输入文件并按行读取文本
 	file, err := os.Open(inputFile)
 	if err != nil {
-		fmt.Println("无法打开输入文件。")
+		log.Println("无法打开输入文件。")
 		os.Exit(1)
 	}
 	defer file.Close()
